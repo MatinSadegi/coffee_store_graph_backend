@@ -46,6 +46,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 export const getProducts = asyncHandler(async (req, res) => {
   const queryObj = { ...req.query };
   const keys = Object.keys(queryObj);
+  
   if (keys.length === 0) {
     const products = await Product.find();
     res.status(200).json(products);
@@ -60,7 +61,6 @@ export const getProducts = asyncHandler(async (req, res) => {
         newObj[item] = queryObj[item].split(",");
       }
     });
-
     keys.forEach((item) => {
       if (queryObj[item] === "") {
         delete newObj[item];
@@ -83,7 +83,6 @@ export const getProducts = asyncHandler(async (req, res) => {
     } else {
       query.sort("-createdAt");
     }
-
     const product = await query;
     res.status(200).json(product);
   }
@@ -91,10 +90,11 @@ export const getProducts = asyncHandler(async (req, res) => {
 
 //GET get product
 export const getProduct = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { slug } = req.params;
   try {
-    const findProduct = await Product.findOne({ slug: id });
+    const findProduct = await Product.findOne({ slug });
     res.json(findProduct);
+    console.log(findProduct)
   } catch (error) {
     throw new Error(error);
   }

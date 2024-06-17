@@ -20,7 +20,9 @@ const machineSchema = new mongoose.Schema({
 const cupSchema = new mongoose.Schema({
   color: { type: String, required: true },
   capacity: { type: Number, required: true },
-  cupDimensions: { H: Number, W: Number, D: Number },
+  width: { type: Number, required: true },
+  height: { type: Number, required: true },
+  saucerWidth: { type: Number, required: true },
 });
 
 const productSchema = new mongoose.Schema(

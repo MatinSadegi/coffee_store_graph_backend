@@ -8,7 +8,7 @@ console.log(req.body)
   try {
     const newCategory = await Category.create({
       title,
-      subCategory,
+      subCategory, 
     });
     res.json(newCategory);
   } catch (error) {
