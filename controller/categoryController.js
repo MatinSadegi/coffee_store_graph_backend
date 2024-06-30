@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler";
 //POST create category
 export const createCategory = asyncHandler(async (req, res) => {
   const { title, subCategory } = req.body;
-console.log(req.body)
+
   try {
     const newCategory = await Category.create({
       title,

@@ -46,12 +46,13 @@ export const createProduct = asyncHandler(async (req, res) => {
 export const getProducts = asyncHandler(async (req, res) => {
   const queryObj = { ...req.query };
   const keys = Object.keys(queryObj);
-  
-  if (keys.length === 0) {
+   console.log(keys)
+  if (keys.length === 0 || keys[0]==='sort') {
     const products = await Product.find();
+   console.log("products");
     res.status(200).json(products);
   } else { 
-    let newObj = {}; 
+    let newObj = {};  
     keys.map((item) => {
       if (item === "price") {
         newObj[item] = queryObj[item];
@@ -94,7 +95,6 @@ export const getProduct = asyncHandler(async (req, res) => {
   try {
     const findProduct = await Product.findOne({ slug });
     res.json(findProduct);
-    console.log(findProduct)
   } catch (error) {
     throw new Error(error);
   }
