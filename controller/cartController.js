@@ -1,13 +1,15 @@
 import asyncHandler from "express-async-handler";
 import Cart from "../models/cartModel.js";
 import Product from "../models/productModel.js";
-import User from "../models/userModel.js";
 
 export const addToCart = asyncHandler(async (req, res) => {
   const { productId, count } = req.body;
-  const { price, title, image } = await Product.findById(productId);
+  const { price, title, image, inStock } = await Product.findById(productId);
   const user = req.userId;
-  let quantity = 0;
+  if (count > inStock) {
+    res.status(201).send("محصول موجود نیست");
+    return;
+  }
   if (!user) {
     if (req.session.cart) {
       for (let i = 0; i < req.session.cart.products.length; i++) {
@@ -15,21 +17,9 @@ export const addToCart = asyncHandler(async (req, res) => {
           req.session.cart.products[i].count += count;
           req.session.cart.cartTotal += count * price;
           req.session.cart.countTotal += count;
-          quantity++;
+
         }
       }
-      // if (quantity === 0) {
-      //   req.session.cart.products.push({
-      //     productId: id,
-      //     size,
-      //     count,
-      //     image,
-      //     title,
-      //     price,
-      //   });
-      //   req.session.cart.cartTotal += count * price;
-      //   req.session.cart.countTotal += count;
-      // }
     } else {
       req.session.cart = {
         products: [{ productId, count, image, title, price }],
@@ -37,17 +27,24 @@ export const addToCart = asyncHandler(async (req, res) => {
         countTotal: count,
       };
     }
-
-    res.status(200).json(req.session.cart.cartTotal);
   }
+  // await Product.updateOne(
+  //   { _id: productId },
+  //   {
+  //     $inc: {
+  //       inStock: -count,
+  //     },
+  //   }
+  // );
+  res.status(201).send("محصول به سبد خرید اضافه شد");
 });
 
 //GET get user cart
 export const getCart = asyncHandler(async (req, res) => {
   const user = req.userId;
   if (!user) {
-    const sessionCart = req.session;
-    console.log(sessionCart);
+    const sessionCart =  await req.session;
+
     if (sessionCart?.cart) {
       res.status(201).json({
         products: sessionCart.cart.products,
