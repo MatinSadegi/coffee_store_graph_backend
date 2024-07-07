@@ -4,19 +4,17 @@ import session from "express-session";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import {default as MongoStore} from "connect-mongo";
+import { default as MongoStore } from "connect-mongo";
 import { createServer } from "http";
 import connectDB from "./config/db.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 
-
 const app = express();
 const server = createServer(app);
 dotenv.config();
 connectDB();
-
 
 app.use(bodyParser.json({ limit: "50mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
@@ -28,9 +26,12 @@ app.use(
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
       maxAge: 6000 * 60,
+      httpOnly: true,
+      secure: true,
     },
   })
 );
+app.set("trust proxy", 1);
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 app.use(express.static("public"));
