@@ -6,6 +6,7 @@ export const addToCart = asyncHandler(async (req, res) => {
   const { productId, count } = req.body;
   const { price, title, image, inStock } = await Product.findById(productId);
   const user = req.userId;
+  let quantity = 0;
   if (count > inStock) {
     res.status(201).send("محصول موجود نیست");
     return;
@@ -17,7 +18,19 @@ export const addToCart = asyncHandler(async (req, res) => {
           req.session.cart.products[i].count += count;
           req.session.cart.cartTotal += count * price;
           req.session.cart.countTotal += count;
+          quantity++;
         }
+      }
+      if (quantity === 0) {
+        req.session.cart.products.push({
+          productId,
+          count,
+          image,
+          title,
+          price,
+        });
+        req.session.cart.cartTotal += count * price;
+        req.session.cart.countTotal += count;
       }
     } else {
       req.session.cart = {
