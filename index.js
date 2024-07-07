@@ -15,7 +15,7 @@ const app = express();
 const server = createServer(app);
 dotenv.config();
 connectDB();
-
+app.set("trust proxy", 1);
 app.use(bodyParser.json({ limit: "50mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(
@@ -28,10 +28,11 @@ app.use(
       maxAge: 6000 * 60,
       httpOnly: true,
       secure: true,
+      sameSite:'none'
     },
   })
 );
-app.set("trust proxy", 1);
+
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 app.use(express.static("public"));
