@@ -17,7 +17,6 @@ export const addToCart = asyncHandler(async (req, res) => {
           req.session.cart.products[i].count += count;
           req.session.cart.cartTotal += count * price;
           req.session.cart.countTotal += count;
-
         }
       }
     } else {
@@ -43,7 +42,7 @@ export const addToCart = asyncHandler(async (req, res) => {
 export const getCart = asyncHandler(async (req, res) => {
   const user = req.userId;
   if (!user) {
-    const sessionCart =  await req.session;
+    const sessionCart = await req.session;
 
     if (sessionCart?.cart) {
       res.status(201).json({
@@ -64,4 +63,28 @@ export const getCart = asyncHandler(async (req, res) => {
   //     res.json(populatedCart);
   //   }
   // }
+});
+
+export const removeFromCart = asyncHandler(async (req, res) => {
+  const { productId, count } = req.body;
+  const cart = req.session.cart;
+  let newSessionCart;
+  for (let i = 0; i < cart.products.length; i++) {
+    if (cart.products[i].productId === productId) {
+      const price = cart.products[i].price;
+      if (cart.products[i].count === count) {
+        newSessionCart = cart.products.filter(
+          (item) => !(item.productId === productId)
+        );
+        cart.products = newSessionCart;
+        cart.cartTotal -= count * price;
+        cart.countTotal -= count;
+      } else {
+        cart.products[i].count -= count;
+        cart.cartTotal -= count * price;
+        cart.countTotal -= count;
+      }
+    }
+  }
+  res.status(200).send("The product was removed from the cart");
 });
