@@ -25,7 +25,7 @@ app.use(
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
-      maxAge: 6000 * 60,
+      maxAge: 6000 * 60 * 6,
       httpOnly: true,
       secure: true,
       sameSite:'none'
